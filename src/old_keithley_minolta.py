@@ -113,10 +113,10 @@ def keithley(voltage):
     ser_keithley.write(b"*RST\r")                           #Reset Keithley
     ser_keithley.write(b":SOUR:FUNC VOLT\r")                #Set Voltage as SOURCE
     ser_keithley.write(b":SOUR:VOLT:MODE FIXED\r")          #Fixed Voltage
-    #ser_keithley.write(b":SOUR:VOLT:LEV %f\r" % voltf)    #Set Voltage from request
+    ser_keithley.write(b":SOUR:VOLT:LEV %f\r" % voltf)    #Set Voltage from request
     #ser_keithley.write(b":SOUR:VOLT:LEV " + voltfe + "\r")
     #voltf_fixed = bytes(":SOUR:VOLT:LEV {0}\r".format(voltf))
-    ser_keithley.write(bytes(":SOUR:VOLT:LEV {0}\r".format(voltf), encoding='utf8'))
+    # ser_keithley.write(bytes(":SOUR:VOLT:LEV {0}\r".format(voltf), encoding='utf8'))
 
     ser_keithley.write(b':SENS:FUNC "CURRENT"\r')           #Set Current as SENSOR
     ser_keithley.write(b':FORM:ELEM VOLT, CURR\r')          #Retrieve Voltage and Current only 
