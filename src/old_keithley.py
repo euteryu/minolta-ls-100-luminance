@@ -20,25 +20,27 @@ class Keithley_2400():
         if not self._is_on():
             raise Exception('No response from Keithley... '\
                             'Check if it is ON '\
-                            'or RESTART !!!')          
+                            'or RESTART equipment!!!')          
     
     def _is_on(self):
         with serial.Serial(self.port, self.baudrate, self.timeout) as ser_keithley:
             ser_keithley.write(b'*RST\r')
-            ser_keithley.write(b':STAT:MEAS?\r')
+            ser_keithley.write(b':STAT:MEASure?\r')
             response_state = ser_keithley.readline()
             ser_keithley.close()
             return response_state
                  
     # =============================================================================
-    # Scan given single fixed voltage.
+    # FUNCTION:
+    #           Scan given single fixed voltage.
     # 
-    # TODO: RAISE EXCEPTION AND CLOSE SERIAL PORT IF ANY WRITE FAILURE OCCUR,
-    #       TO PREVENT `SerialException`  ERROR.
+    # TODO:
+    #           RAISE EXCEPTION AND CLOSE SERIAL PORT IF ANY WRITE FAILURE OCCUR,
+    #           TO PREVENT `SerialException`  ERROR.
     #
-    # See:
-    #     https://github.com/charkster/keithley_2308
-    #     https://stackoverflow.com/questions/53882152/how-to-merge-f-string-with-b-string-in-one-line-usage-in-python
+    # SEE:
+    #           https://github.com/charkster/keithley_2308
+    #           https://stackoverflow.com/questions/53882152/how-to-merge-f-string-with-b-string-in-one-line-usage-in-python
     # =============================================================================
     def single_scan(self, voltage):
         fixed_voltage = str(voltage)
@@ -54,15 +56,18 @@ class Keithley_2400():
                     # sleep(10)
                 ser_keithley.write(command)
                 
-            values = [float(i) for i in raw_data.decode('utf-8').strip().split(',')]
-            voltage = values[0]
-            current = values[1]
             ser_keithley.close()
-            return voltage, current
+
+        values = [float(i) for i in raw_data.decode('utf-8').strip().split(',')]
+        voltage = values[0]
+        current = values[1]
+        
+        return voltage, current
 
 
     # =============================================================================
-    # Incremental scan from start to stop voltage every fixed step.
+    # FUNCTION:
+    #           Incremental scan from start to stop voltage every fixed step.
     # =============================================================================
     def incr_scan(self, start_v, stop_v, v_step, nplc, hys=False):
         raw_data = ""
@@ -72,7 +77,7 @@ class Keithley_2400():
 
         if (stop_v - start_v) * v_step < 0:
             v_step = -v_step
-            print("Swapping v_step polarity  +  <-->  -")
+            print("Swapping step voltage polarity:  +  <-->  -")
             trigger_count = int(1 + (stop_v - start_v) / v_step)
             num_of_read = 28 * trigger_count
 
@@ -119,10 +124,13 @@ def keithley(voltage):
     ser_keithley.write(bytes(":SOUR:VOLT:LEV {0}\r".format(voltf), encoding='utf8'))
 
     ser_keithley.write(b':SENS:FUNC "CURRENT"\r')           #Set Current as SENSOR
+
     ser_keithley.write(b':FORM:ELEM VOLT, CURR\r')          #Retrieve Voltage and Current only 
+
     ser_keithley.write(b':SENS:VOLT:PROT 5\r')              #Cmpl voltage in Volt
     ser_keithley.write(b':SENS:CURR:PROT 0.5\r')            #Cmpl current in Ampere
     ser_keithley.write(b':SENS:CURR:NPLC 0.1\r')            #AC noise integrating time
+
     ser_keithley.write(b':OUTP ON\r')
     ser_keithley.write(b':READ?\r')
         
