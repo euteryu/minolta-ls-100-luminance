@@ -1,20 +1,11 @@
 #--------------------------------------------------------------------------------
-# This code is based on the previously developed one, stability_v2_1.
-# Main improvement is the GUI part which used wxPython.
-# Other improvement is the integration of multiple functions in a screen.
-# Integrated functions are quick checking of Jsc of a device, J-V measurement for
-# multiple devices and stability test. This code supports both 4-device chamber
-# and 9-device chamber by selecting the check box.
-# Due to the limitation of switch box 9-device chamber only can measure 2 pixels
-# for each device but 2-device chamber can do 6 pixels for each.
-# User can place devices any position in the chamber and type in the position in
-# the 'Devices' section.
+# This code is for measuring current and luminance of light emitting device while
+# changing supply voltage to the device.
+# Voltage supply and current measurement will be controlled by Keithley 2400 and
+# luminance measurement will be done by Minolta LS-100.
 # 
-# date: 16th October 2019
-# update: 1st November 2019  (add saveas mode - possible to type in new filename)
-# update: 7th July 2020 (replace pixel 5 to pixel 3)
-# update: 4th February 2021 (replace the 4-device chamber to 2-device chamber)
-# version: v1.3
+# date: 20th October 2022
+# version: v1.
 #----------------------------------------------------------------------------------
 __author__ = 'Gihan Ryu'
 
@@ -220,7 +211,7 @@ class MyFrame(wx.Frame):
             currents.append(current)
             luminances.append(luminance)
             
-            #Drawing a graph
+            #Drawing a graph in realtime
             self.matplotlibhrapg.drawGraph(voltage, current, luminance, area)
             # self.matplotlibhrapg.drawGraphs(voltages, currents, luminances, area)
             #Save data
@@ -229,6 +220,7 @@ class MyFrame(wx.Frame):
                 wr.writerow([voltage, current, current_density, luminance])
                 
         self.keithley_off()
+        #Draw all graphs together after finishing measurement
         self.matplotlibhrapg.cleargraph()
         self.matplotlibhrapg.drawGraphs(voltages, currents, luminances, area)
                 
